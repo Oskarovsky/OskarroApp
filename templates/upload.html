@@ -1,0 +1,27 @@
+{% extends 'header.html' %}
+
+{% block login %}
+
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+			{% if files_len < 6 %}
+				<div style="display: flex; justify-content: center;">
+
+				   <form id='form1' action="http://127.0.0.1:5003/slyko/dl/upload" method="POST" enctype="multipart/form-data">
+					  <input type="file" name="file" placeholder="file"/>
+                      <input type="hidden" name="token" value="{{ token }}" required>
+                      <button type="submit" form="form1">Upload</button>
+				   </form>
+
+				</div>
+			{% else %}
+				You've reached files number limit.
+				Delete something to upload new files.
+			{% endif %}
+    </div>
+
+{% endblock %}
