@@ -75,6 +75,38 @@ redis = redis.Redis()
 
 
 
+# START OAuth ---------------------
+
+# Here we're using the /callback route.
+@app.route('/slyko/callback')
+def callback():
+    # Handles response from token endpoint
+    auth0.authorize_access_token()
+    resp = auth0.get('userinfo')
+    userinfo = resp.json()
+    sid = str(uuid.uuid4())
+    session['current_user'] = sid
+    redis.set(session['current_user'], userinfo['name'], ex=300)
+    sids = redis.hgetall("sids")
+    if sids==None:
+               tmp={sid:False}
+               redis.hmset("sids",tmp)
+    else:
+               sids[sid]=0
+               redis.hmset("sids",sids)
+
+    # Store the user information in flask session.
+    session['jwt_payload'] = userinfo
+    session['profile'] = {
+        'user_id': userinfo['sub'],
+        'name': userinfo['name'],
+        'picture': userinfo['picture']
+    }
+    return redirect(url_for('homepage'))
+
+
+
+
 
 with open("users.json") as f:
     data = json.load(f)
@@ -91,7 +123,7 @@ def creating_token(object,expiration):
 def login_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        if 'current_user' not in session:
+        if ('current_user' not in session) and ('profile' not in session):
             abort(401)
         if redis.get(session['current_user'])==None:
             abort(401)
@@ -106,7 +138,7 @@ def login_required(f):
 @app.route('/slyko/')
 def homepage():
     if not session.get('current_user'):
-        return redirect(url_for('signin'))
+        return redirect(url_for('sign'))
     return render_template('main.html', TOPIC_DICT=TOPIC_DICT)
 
 
@@ -134,75 +166,52 @@ def signin():
     return render_template('signin.html')
 
 
+@app.route('/slyko/sign',  methods=['GET', 'POST'])
+def sign():
+    return render_template("login.html")
+
+
 @app.route('/slyko/signup')
 def signup():
     return render_template("signup.html")
 
 
-# START OAuth ---------------------
-
-# Here we're using the /callback route.
-@app.route('/callback')
-def callback_handling():
-    # Handles response from token endpoint
-    auth0.authorize_access_token()
-    resp = auth0.get('userinfo')
-    userinfo = resp.json()
-
-    # Store the user information in flask session.
-    session['jwt_payload'] = userinfo
-    session['profile'] = {
-        'user_id': userinfo['sub'],
-        'name': userinfo['name'],
-        'picture': userinfo['picture']
-    }
-    return redirect('/dashboard')
 
 
-@app.route('/slyko/login')
+@app.route('/slyko/login', methods=['GET', 'POST'])
 def login():
-    return auth0.authorize_redirect(redirect_uri='http://127.0.0.1:5002/slyko/', audience='https://oskarro.eu.auth0.com/userinfo')
+    return auth0.authorize_redirect(redirect_uri=url_for("callback", _external=True),
+                                    audience='https://oskarro.eu.auth0.com/userinfo')
 
 
-def requires_auth(f):
-  @wraps(f)
-  def decorated(*args, **kwargs):
-    if 'profile' not in session:
-      # Redirect to Login page here
-      return redirect('/slyko/login')
-    return f(*args, **kwargs)
-
-  return decorated
 
 
 @app.route('/dashboard')
-@requires_auth
+@login_required
 def dashboard():
-    return render_template('homepage.html',
+    return render_template(url_for(homepage),
                            userinfo=session['profile'],
                            userinfo_pretty=json.dumps(session['jwt_payload'], indent=4))
 
 
-# /server.py
+
 
 @app.route('/slyko/logout')
-def out():
+def logout():
+    redis.delete(session['current_user'])
+    sids=redis.hgetall("sids")
+    session.pop('current_user', None)
     # Clear session stored data
     session.clear()
     session['current_user'] = None
     session['logged_in'] = None
     session.pop('current_user', None)
     # Redirect user to logout endpoint
-    params = {'returnTo': url_for('signin', _external=True), 'client_id': 'xaTwJSSL6BkiDhFLFxY8okLueLSLcAqd'}
+    params = {'returnTo': url_for('sign', _external=True), 'client_id': 'xaTwJSSL6BkiDhFLFxY8okLueLSLcAqd'}
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
 # END OAuth ---------------------
-
-
-
-
-
 
 
 
