@@ -1,0 +1,51 @@
+{% extends 'header.html' %}
+
+{% block login %}
+
+
+
+{% endblock %}
+
+{% block body %}
+
+     <div class="container">
+          <h3 class="title">All files from market:</h3>
+
+ 	    {% if files %}
+               <table border="1">
+                  <tr>
+                     <th>Owner &emsp; </th>
+                     <th>&emsp;&emsp;Track &emsp; </th>
+                     <th>&emsp;&emsp;Uniform Resource Locator   &emsp;</th>
+                  </tr>
+                  {% for data in files %}
+                  <tr>
+                      <td>{{ data[0] }}</td>
+                      <td>
+                      {% for dict in data[1:] %}
+                          <ul>{{ dict[0] }} &emsp; &emsp;</ul>
+                      {% endfor %}
+                      </td>
+                      <td>
+                          {% for dict in data[1:] %}
+                              <ul><a class="tb-btn" href="http://127.0.0.1:5002{{ dict[1] }}">URL  </a></ul>
+                          {% endfor %}
+                      </td>
+
+                  </tr>
+                  {% endfor %}
+               </table>
+
+	    {% else %}
+	        You don't have any files here.
+	    {% endif %}
+
+
+        <form action="/slyko/">
+           <input class="btn" type="submit" value="Back" />
+        </form>
+
+     </div>
+
+
+{% endblock %}

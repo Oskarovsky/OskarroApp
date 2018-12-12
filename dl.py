@@ -97,8 +97,9 @@ def delete(token):
         return os.abort(401)
     user_path = app.upload_path.joinpath(user['user']).resolve()
     q = user_path / user['file']
+    print('ochoelra')
     if q.exists():
-        os.remove(token)
+        os.remove(q)
         return redirect(url_for('storage'))
     else:
         os.abort(404)
