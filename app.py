@@ -75,7 +75,6 @@ redis = redis.Redis()
 
 
 
-# START OAuth ---------------------
 
 # Here we're using the /callback route.
 @app.route('/slyko/callback')
@@ -211,22 +210,10 @@ def logout():
     return redirect(auth0.api_base_url + '/v2/logout?' + urlencode(params))
 
 
-# END OAuth ---------------------
 
 
 
 
-
-'''
-@app.route('/slyko/logout')
-@login_required
-def logout():
-    session['current_user'] = None
-    session['logged_in'] = None
-    #redis.delete(session['current_user'])
-    session.pop('current_user', None)
-    return redirect(url_for('signin'))
-'''
 
 
 @app.route("/slyko/storage")
