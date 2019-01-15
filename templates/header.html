@@ -3,9 +3,12 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Flask App - Task1</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <title>Flask App - Task_07</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no,
+        maximum-scale=1.0, minimum-scale=1.0">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css')}}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='mainlogo.png') }}">
 
 
@@ -22,9 +25,15 @@
 
         <ul class="nav justify-content-end">
             <li>
+                <div type="text" style="margin-top: 10px; margin-right: 15px;">
+                    <h3>Hello oski</h3>
+                </div>
+            </li>
+            <li>
             <a href="/slyko/logout"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-warning" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 34px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout
+                <button type="button" class="btn btn-warning" aria-label="Left Align"
+                        style="margin-top: 5px; margin-bottom: 5px; height: 37px; margin-right: 15px">
+                    Logout
                 </button>
             </a>
             </li>
@@ -35,16 +44,20 @@
         <ul class="nav justify-content-end">
             <li>
             <a href="/slyko/sign"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 34px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Login
+                <button type="button" class="btn btn-light" aria-label="Left Align"
+                        style="margin-top: 5px; margin-bottom: 5px; height: 37px; margin-right: 15px;
+                               color: #fff;background-color: #343a40;border-color: #343a40;">
+                    Login
                 </button>
             </a>
             </li>
 
             <li>
             <a href="/slyko/signup"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 34px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Signup
+                <button type="button" class="btn btn-light" aria-label="Left Align"
+                        style="margin-top: 5px; margin-bottom: 5px; height: 37px; margin-right: 15px;
+                               color: #fff;background-color: #343a40;border-color: #343a40;">
+                    Signup
                 </button>
             </a>
             </li>
@@ -58,53 +71,102 @@
         {% endblock %}
 
 
-          <a class="navbar-brand" href="/">
-            <img style="max-width:120px; margin-top: 12px; margin-left: 120px" src="{{ url_for('static', filename='images/mainlogo.png') }}">
-          </a>
 
-            <a href="/slyko/"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Home
-                </button>
+    <div align="center" style="text-align: center;">
+     <img style="max-width:120px; margin-bottom: 40px" src="{{ url_for('static', filename='images/mainlogo.png') }}">
+
+
+
+
+
+    {% if session.get('current_user') %}
+        <div class="menu-oskar-login">
+    {% else %}
+        <div class="menu-oskar-logoff">
+    {% endif %}
+
+        <nav class="navbar navbar-expand-lg">
+
+
+
+            <ul class="navbar-nav">
+
+            <a href="/slyko/" class="navbar-brand">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-dark"
+                            >
+                            Home
+                     </button>
+                </li>
             </a>
 
-            <a href="/slyko/mixes"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Mixes
-                </button>
+
+            <a href="/slyko/mixes" class="navbar-brand">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-dark"
+                            >
+                        Mixes
+                    </button>
+                </li>
             </a>
 
-            <a href="/slyko/tracks"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Tracks
-                </button>
+
+
+            <a href="/slyko/tracks" class="navbar-brand">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-dark">
+                        Tracks
+                    </button>
+                </li>
             </a>
+
+
 
             {% if session.get('current_user') %}
-            <a href="{{ url_for('file_add') }}"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Upload files
-                </button>
+            <a href="{{ url_for('file_add') }}" class="navbar-brand">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-dark">
+                        Upload files
+                    </button>
+                </li>
             </a>
 
-            <a href="/slyko/storage"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> My files
-                </button>
+
+            <a href="/slyko/storage" class="navbar-brand">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-dark">
+                        My files
+                    </button>
+                </li>
             </a>
+
             {% endif %}
 
-            <a href="{{ url_for('market') }}"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> All files
-                </button>
+
+            <a href="{{ url_for('market') }}" class="navbar-brand">
+                    <li class="nav-item">
+                    <button type="button" class="btn btn-dark">
+                        All files
+                    </button>
+                    </li>
             </a>
 
-            <a href="http://www.oskarro.com"> <span class="glyphicon glyphicon-heart"></span>
-                <button type="button" class="btn btn-dark" aria-label="Left Align" style="margin-top: 5px; margin-bottom: 5px; height: 50px; width: 180px; margin-right: 15px">
-                    <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Contact
-                </button>
+
+            <a href="http://www.oskarro.com" class="navbar-brand">
+                    <li class="nav-item">
+                    <button type="button" class="btn btn-dark">
+                        Contact
+                    </button>
+                    </li>
             </a>
+
+
+            </ul>
+
+        </nav>
+      </div>
+    </div>
+    </div>
 
         </div>
 
@@ -127,18 +189,58 @@
           {% endif %}
         {% endwith %}
 
-
+        <br/>
+        <br/>
+        <br/>
 
         {% block body %}
 
         {% endblock %}
 
+        <br/>
+        <br/>
+        <br/>
 
 
+<footer class="ct-footer">
+  <div class="container">
+    <form name="contentForm" enctype="multipart/form-data" method="post" action="">
+      <div class="ct-footer-pre text-center">
+        <div class="inner">
+          <span>Join OskarroApp to receive new mixes!</span>
+        </div>
+        <div class="inner">
+          <div class="form-group">
+            <input name="formfields[nl_email]" id="nl_email" class="validate[required]" placeholder="Enter your email address" type="text" value=""> <label for="nl_email" class="sr-only">Email Address</label> <button type="submit" class="btn btn-danger">Join</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 
 
+  <div class="ct-footer-post">
+    <div class="container">
+      <div class="inner-left">
+        <ul>
+          <li>
+            <a href="">FAQ</a>
+          </li>
+          <li>
+            <a href="">News</a>
+          </li>
+          <li>
+            <a href="">Contact Us</a>
+          </li>
+        </ul>
+      </div>
+      <div class="inner-right">
+        <p>Copyright © 2019 Oskar Slyk.&nbsp;<a href="https://www.pw.edu.pl/">Warsaw University of Technology</a></p>
+      </div>
+    </div>
+  </div>
+</footer>
 
-	<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-	<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
 
 </body>

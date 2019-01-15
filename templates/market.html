@@ -14,16 +14,16 @@
  	    {% if files %}
                <table border="1">
                   <tr>
-                     <th>Owner &emsp; </th>
-                     <th>&emsp;&emsp;Track &emsp; </th>
-                     <th>&emsp;&emsp;Uniform Resource Locator   &emsp;</th>
+                      <th>&emsp;&emsp;Owner&emsp; &emsp;</th>
+                     <th>&emsp;&emsp;Track &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; </th>
+                     <th>&emsp;&emsp;Uniform Resource Locator   &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</th>
                   </tr>
                   {% for data in files %}
                   <tr>
-                      <td>{{ data[0] }}</td>
+                      <td>&emsp;&emsp;{{ data[0] }}&emsp; &emsp; &emsp; &emsp;</td>
                       <td>
                       {% for dict in data[1:] %}
-                          <ul>{{ dict[0] }} &emsp; &emsp;</ul>
+                          <ul>{{ dict[0] }} &emsp; &emsp; &emsp; &emsp; &emsp; &emsp;</ul>
                       {% endfor %}
                       </td>
                       <td>

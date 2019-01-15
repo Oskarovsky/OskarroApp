@@ -1,21 +1,26 @@
+import datetime
+import json
 import os
 from pathlib import Path
 
 import jwt
 import redis as redis
+import requests
+import verify as verify
 from flask import Flask, session, request, send_from_directory, render_template, abort, flash, url_for
 from werkzeug.utils import secure_filename, redirect
-
 
 import content_management
 from app import login_required
 
 
 ### ABOUT CONTENT ###
+import publisher
 
 app = Flask(__name__)
 app.secret_key = b'35dvgy8i(UHoiawu hftvd9'
 app.jwt_secret_key = 'DjOskarroInDaMix'
+app.client_server = "http://127.0.0.1:5002/slyko/"
 
 # content of main site
 TOPIC_DICT = content_management.Content()
@@ -38,6 +43,21 @@ cwd = os.path.dirname(os.path.realpath(__file__))
 
 redis = redis.Redis()
 
+
+app.queue = publisher.Publisher("localhost","slyko-exchange","resize")
+
+
+def sendMessage(msg):
+    payload = {"openpath": msg['openpath'],
+               "savepath": msg['savepath'],
+               "exp": (datetime.datetime.utcnow() + datetime.timedelta(days=1))}
+    send = jwt.encode(payload, app.jwt_secret_key, algorithm='HS256')
+    app.queue.publish(send)
+    return
+
+def checkFormat(filepath):
+    tmp = filepath.split(".")[-1]
+    return tmp in ["png","jpg","jpeg"]
 
 
 
@@ -62,9 +82,15 @@ def upload():
     filename = secure_filename(f.filename)
     user_path.mkdir(parents=True, exist_ok=True)
     q = user_path / filename
-    f.save(str(q))
-    flash("Your file has been added")
 
+    print(checkFormat(str(q)))
+    f.save(str(q))
+    if checkFormat(str(q)):
+        sendMessage(
+            {'openpath': str(q),
+             'savepath': str(Path("./static", "miniatures", user['user']))})
+        requests.post(app.client_server + "post?user=" + user['user'], verify=False)
+    flash("Your file has been added")
     return redirect('http://127.0.0.1:5002/slyko/storage')
 
 
@@ -88,7 +114,7 @@ def download(token):
 
 # DELETING
 
-@app.route('/slyko/dl/delete/<string:token>')
+@app.route("/slyko/dl/delete/<string:token>")
 @login_required
 def delete(token):
     try:
@@ -109,6 +135,19 @@ def delete(token):
 def send_static(subpath):
     return app.send_static_file(subpath)
 
+@app.route("/slyko/dl/list/<string:user>")
+def list(user):
+    user_path = app.upload_path.joinpath(user).resolve()
+    files = [x.name for x in user_path.glob('**/*') if x.is_file()]
+    js = json.dumps({"list":files})
+    return js
+
+@app.route("/slyko/dl/miniatures/<string:user>")
+def miniatures(user):
+    user_path = Path("./static", "miniatures", user).resolve()
+    files = [x.name for x in user_path.glob('**/*') if x.is_file()]
+    js = json.dumps({"list":files})
+    return js
 
 # RUNNING MODE
 

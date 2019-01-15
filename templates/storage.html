@@ -16,18 +16,22 @@
                   <tr>
                      <th>Name</th>
                      <th>Size</th>
-                     <th></th>
-                     <th></th>
+                     <th>Download</th>
+                     <th>Miniature</th>
                   </tr>
                   {% for data in files %}
                   <tr>
                      <td>{{ data[0] }} &emsp;</td>
                      <td>{{ data[1] }} &emsp;</td>
-                     <td>
-                     	<a class="tb-btn" href="{{ data[2] }}" download>Download &emsp;</a>
-                     </td>
+                     <td><a class="tb-btn" href="{{ data[2] }}" download>Download &emsp;</a></td>
+                    {% if data[0] in miniatures %}
+                        {% if data[0].split(".")[-1] in ['png','jpg','jpeg'] %}
+                            <td><img src="{{ url_for('static',filename="miniatures/"+user+"/"+data[0]) }}" alt="{{ data[0] }}"></td>
+                    {% else %}
+                            <td><img src="{{ url_for('static',filename='default_miniature.png') }}" alt="default image"></td>
+                    {% endif %}
+                    {% endif %}
 
-                     
                   </tr>
                   {% endfor %}
                </table>

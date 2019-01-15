@@ -3,6 +3,7 @@ import uuid
 from functools import wraps
 from pathlib import Path
 
+import requests
 from flask import Flask, abort, send_from_directory, make_response
 from flask import render_template
 from flask import flash
@@ -49,6 +50,7 @@ auth0 = oauth.register(
 
 app.secret_key = b'35dvgy8i(UHoiawu hftvd9'
 app.jwt_secret_key = 'DjOskarroInDaMix'
+app.file_server = "http://127.0.0.1:5003/slyko/dl/"
 
 # content of main site
 TOPIC_DICT = content_management.Content()
@@ -222,6 +224,12 @@ def storage():
     redis.expire(session['current_user'], time=300)
     user_path = app.upload_path.joinpath(redis.get(session['current_user']).decode('utf-8')).resolve()
     user = redis.get(session['current_user']).decode('utf-8')
+    cont = requests.get(app.file_server + "list/" + user, verify=False).content.decode()
+    miniature = requests.get(app.file_server + "miniatures/" + user, verify=False).content.decode()
+
+    files = json.loads(cont)['list']
+    miniatures = []
+    miniatures = json.loads(miniature)['list']
 
     files = []
     for filename in os.listdir(str(user_path)):
@@ -230,14 +238,17 @@ def storage():
         data.append(str(os.stat(str(user_path) + "/" + filename).st_size) + "B")
         data.append("/slyko/dl/download/" + filename)
         data.append("/slyko/dl/delete/" + filename)
+        data.append("/slyko/static/miniatures/" + filename)
+        miniatures.append(filename)
         files.append(data)
 
     tokens = {}
     #for f in files:
+     #   tokens[f]=creating_token(f,240).decode('utf-8')
 
     return render_template(
         'storage.html',user=redis.get(session['current_user']).decode('utf-8'),
-        files_len=len(files), files=files, tokens=tokens)
+        files_len=len(files), files=files, tokens=tokens, miniatures=miniatures)
 
 
 @app.route("/slyko/market", methods=['GET', 'POST'])
